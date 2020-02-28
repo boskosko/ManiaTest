@@ -90,10 +90,26 @@ function login_user($email, $password){
 
 
 function getCurrentUser(){
+    session_start();
     $userid = $_SESSION['id'];
 
     return $userid;
 }
+
+
+function isUserAdmin($id)
+{
+    global $con;
+    $status = 0;
+
+    $sql = "SELECT is_admin FROM users where id=$id; ";
+    $result = mysqli_query($con, $sql);
+    while ($row = mysqli_fetch_assoc($result)) {
+        $status = $row['is_admin'];
+    }
+    return $status;
+}
+
 ?>
 
 

@@ -39,12 +39,7 @@ if(isset($_POST['register'])){
     }
     if(empty($error)){
         register_user($username, $email, $password);
-
-      
         }
-
-    
-
  }
 ?>
 

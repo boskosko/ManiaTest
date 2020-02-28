@@ -7,24 +7,26 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 if(isset($_POST['submit'])){
 
-    $name = $_POST['username'];
-    $email = $_POST['email'];
-    $title = $_POST['title'];
+    $name    = $_POST['username'];
+    $email   = $_POST['email'];
+    $title   = $_POST['title'];
     $content = $_POST['content'];
- 
-  
-    $db_user = getCurrentUser();
-    
-    $db_title = trim($_POST['title']);
-    $db_content = trim($_POST['content']);
-    $db_title = mysqli_real_escape_string($con, $db_title);
-    $db_content    = mysqli_real_escape_string($con,$db_content);
-    
-    $query = "INSERT INTO emails (user_id, title, content) ";
-    $query .= "VALUES('{$db_user}', '{$db_title}','{$db_content}' )";
-    $send_email_query=mysqli_query($con,$query);
-    confirmQuery($send_email_query);
 
+    $user = getCurrentUser();
+
+    if(!empty($name) && !empty($email) && !empty($title) && !empty($content)) {
+
+        $title = trim($_POST['title']);
+        $content = trim($_POST['content']);
+        $title = mysqli_real_escape_string($con, $title);
+        $content = mysqli_real_escape_string($con, $content);
+
+        $query = "INSERT INTO emails (user_id, title, content) ";
+        $query .= "VALUES('{$user}', '{$title}','{$content}' )";
+        $send_email_query = mysqli_query($con, $query);
+        confirmQuery($send_email_query);
+
+    }
 require 'vendor/autoload.php';
 
 $mail = new PHPMailer(true);
@@ -53,15 +55,11 @@ try {
     //Recipients
     $mail->setFrom('bole@gmail.com', $name);
     $mail->addAddress($email, 'Joe User');     // Add a recipient
-  
-
-    // Attachments
 
     // Content
     $mail->isHTML(true);                                  // Set email format to HTML
     $mail->Subject = $title;
     $mail->Body    = $content;
-   
 
     $mail->send();
     header("Location: contact.php");
@@ -69,6 +67,18 @@ try {
 } catch (Exception $e) {
     header("Location: contact.php");
     $_SESSION['email_failed'] = 'Message has not been sent';
+//    if($name ==''){
+//        $_SESSION['email_failed_name'] = 'Name cannot be empty';
+//    }
+//    if($email ==''){
+//        $_SESSION['email_failed_email'] = 'Email cannot be empty';
+//    }
+//    if($title ==''){
+//        $_SESSION['email_failed_title'] = 'Title cannot be empty';
+//    }
+//    if($content ==''){
+//        $_SESSION['email_failed_content'] = 'Content cannot be empty';
+//    }
 }}
 else{
     echo "Message not sent";
